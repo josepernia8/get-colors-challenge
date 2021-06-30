@@ -1,43 +1,52 @@
 const { getColor } = require('./apiMock');
 
-const { Green, Blue, Red } = require('./classes');
+const { Green, Blue, Red, Black, White } = require('./classes');
 
-async function getColors(green, blue, red, order, callback) {
+async function getColors(values, callback) {
 	const colors = [];
-	if (green === 'true'){
+	if (values.includes('green')) {
 		green = new Green();
-		colors[order.indexOf(green.name)] = getColor(green.name);
+		colors[values.indexOf(green.name)] = getColor(green.name);
 	}
-	if (blue === 'true') {
+	if (values.includes('blue')) {
 		blue = new Blue()
-		colors[order.indexOf(blue.name)] = getColor(blue.name);
+		colors[values.indexOf(blue.name)] = getColor(blue.name);
 	}
-	if (red === 'true') {
+	if (values.includes('red')) {
 		red = new Red();
-		colors[order.indexOf(red.name)] = getColor(red.name);
+		colors[values.indexOf(red.name)] = getColor(red.name);
+	}
+	if (values.includes('black')) {
+		black = new Black();
+		colors[values.indexOf(black.name)] = getColor(black.name);
+	}
+	if (values.includes('white')) {
+		white = new White();
+		colors[values.indexOf(white.name)] = getColor(white.name);
 	}
 	callback(colors);
 	return colors;
 }
 
-function colors() {
-	console.log("DEBUG: ", process.argv)
-	let green = process.argv[2];;
-	let blue = process.argv[3]
-	let red = process.argv[4];
-	const colorOrder = process.argv[5]
-	getColors(green, blue, red, JSON.parse(colorOrder), async function (colors) {
-  	colors = await Promise.all(colors)
-		// console.log(colors)
-		var hexColors = []
-		colors.forEach(color => color ? hexColors.push(color.HEX) : null)
-		console.log(hexColors);
+(() => {
+	// Uncomment for debugging
+	// console.log("DEBUG: ", process.argv)
+
+	const colorsInput = JSON.parse(process.argv[2]);
+
+	getColors(colorsInput, async (colors) => {
+  	apiColors = await Promise.all(colors);
+
+		let hexColors = []
+		apiColors.forEach(color => color ? hexColors.push(color.HEX) : null)
+
+		// Result
+		console.log("Result: ", hexColors);
 	});
-}
+})();
 
-colors()
-
-/*
-To run application:
-node ~/code-challenge/src/index.js true false true '["green","blue", "red"]'
-*/
+/**
+ * To run application:
+ * node ~/code-challenge/src/index.js '["green","blue","red"]'
+ * 
+ */
