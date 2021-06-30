@@ -33,20 +33,27 @@ async function getColors(values, callback) {
 	// console.log("DEBUG: ", process.argv)
 
 	const colorsInput = JSON.parse(process.argv[2]);
+	const type = process.argv[3] ? process.argv[3].toUpperCase() : 'HEX';
 
 	getColors(colorsInput, async (colors) => {
   	apiColors = await Promise.all(colors);
 
-		let hexColors = []
-		apiColors.forEach(color => color ? hexColors.push(color.HEX) : null)
+		const colorCodes = apiColors.map(color => color ? color[type] : null)
 
 		// Result
-		console.log("Result: ", hexColors);
+		console.log("Result: ", colorCodes);
 	});
 })();
 
 /**
- * To run application:
- * node ~/code-challenge/src/index.js '["green","blue","red"]'
- * 
+ * ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+ * │ Instructions to run application:                                                                               │
+ * │                                                                                                                │
+ * │ You need to pass a stringify array of colors in the order you want the output on (green first, then blue, ...) │
+ * │ Then pass the type of output you want back (default hex)                                                       │
+ * │                                                                                                                │
+ * │ @param stringifyArray: '["green","blue","red","black","white"]'                                                │
+ * │ @param type: HEX | RGB                                                                                         │
+ * │ @command node src/index.js '["green","blue","red"]' HEX                                                        │
+ * └────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
  */
