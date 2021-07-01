@@ -1,31 +1,20 @@
 const { getColor } = require('./apiMock');
+const colorClasses = require('./classes');
 
-const { Green, Blue, Red, Black, White } = require('./classes');
-
+/**
+ * Get colors from the classes and then save each promise made to the API in a single array.
+ * @param {Array} values containing the color names
+ * @param {requestCallback} callback to resolve the promises
+ */
 async function getColors(values, callback) {
-	const colors = [];
-	if (values.includes('green')) {
-		green = new Green();
-		colors[values.indexOf(green.name)] = getColor(green.name);
-	}
-	if (values.includes('blue')) {
-		blue = new Blue()
-		colors[values.indexOf(blue.name)] = getColor(blue.name);
-	}
-	if (values.includes('red')) {
-		red = new Red();
-		colors[values.indexOf(red.name)] = getColor(red.name);
-	}
-	if (values.includes('black')) {
-		black = new Black();
-		colors[values.indexOf(black.name)] = getColor(black.name);
-	}
-	if (values.includes('white')) {
-		white = new White();
-		colors[values.indexOf(white.name)] = getColor(white.name);
-	}
+	const colors = values.reduce((acc, key) => {
+		colorClass = colorClasses.get(key);
+		color = new colorClass();
+		acc.push(getColor(color.name));
+
+		return acc;
+	}, []);
 	callback(colors);
-	return colors;
 }
 
 (() => {
@@ -36,9 +25,8 @@ async function getColors(values, callback) {
 	const type = process.argv[3] ? process.argv[3].toUpperCase() : 'HEX';
 
 	getColors(colorsInput, async (colors) => {
-  	apiColors = await Promise.all(colors);
-
-		const colorCodes = apiColors.map(color => color ? color[type] : null)
+  	const apiColors = await Promise.all(colors);
+		const colorCodes = apiColors.map(color => color ? color[type] : null);
 
 		// Result
 		console.log("Result: ", colorCodes);

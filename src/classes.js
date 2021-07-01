@@ -34,4 +34,10 @@ class White extends Color {
   }
 }
 
-module.exports = { Green, Blue, Red, Black, White };
+module.exports = new Map([
+  ['green', Green],
+  ['blue', Blue],
+  ['red', Red],
+  ['black', Black],
+  ['white', White],
+]);
