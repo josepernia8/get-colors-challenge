@@ -31,29 +31,34 @@ const readline = require('readline-sync');
 	const isSync = !!process.argv[4];
 
 	getColors(colorsInput, async (colors) => {
-  	const apiColors = await Promise.all(colors);
-		const colorCodes = apiColors.map(color => color ? color[type] : null);
-
 		if(!isSync) {
+			// Get all colors from the api
+			const apiColors = await Promise.all(colors);
+			const colorCodes = apiColors.map(color => color ? color[type] : null);
+
 			// Print all colors
 			console.log("Result: ", colorCodes);
 			process.exit();
 		}
 
-		const it = colorCodes.values();
+		const it = colorsInput.values();
 		let result = it.next();
 
 		// Loop through each color
 		while(!result.done) {
-			console.log(result.value);
-			
+			// Get current color from the api
+			const color = getColorClass(result.value);
+			const colorCode = await getColor(color.name);
+
+			// Print the specific color
+			console.log(colorCode[type]);
+			result = it.next();
+
 			// Ask the user if it want's to get the next color or end the process
 			if (!readline.keyInYNStrict("Next color?")) {
 				console.log("Terminating process...");
 				process.exit();
 			}
-
-			result = it.next();
 		}
 	});
 })();
@@ -65,11 +70,20 @@ const readline = require('readline-sync');
  */
 async function getColors(values, callback) {
 	const colors = values.reduce((acc, key) => {
-		colorClass = colorClasses.get(key);
-		color = new colorClass();
+		const color = getColorClass(key);
 		acc.push(getColor(color.name));
 
 		return acc;
 	}, []);
 	callback(colors);
+}
+
+/**
+ * Retrieve an instance of a color class.
+ * @param {string} key to get the color from
+ */
+function getColorClass (key) {
+	const colorClass = colorClasses.get(key);
+
+	return new colorClass();
 }
